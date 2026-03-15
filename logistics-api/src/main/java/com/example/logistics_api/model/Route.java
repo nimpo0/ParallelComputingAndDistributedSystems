@@ -1,9 +1,22 @@
 package com.example.logistics_api.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "routes")
 public class Route {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String startPoint;
+
+    @Column(nullable = false)
     private String endPoint;
+
+    @Column(nullable = false)
     private Double distanceKm;
 
     public Route() {

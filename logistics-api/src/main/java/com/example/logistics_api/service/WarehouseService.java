@@ -28,9 +28,27 @@ public class WarehouseService {
 
     public Warehouse createWarehouse(WarehouseDto warehouseDto) {
         Warehouse warehouse = new Warehouse();
+        applyDtoToWarehouse(warehouse, warehouseDto);
+        return warehouseRepository.save(warehouse);
+    }
+
+    public Warehouse updateWarehouse(Long id, WarehouseDto warehouseDto) {
+        Warehouse existingWarehouse = warehouseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse with id " + id + " not found"));
+
+        applyDtoToWarehouse(existingWarehouse, warehouseDto);
+        return warehouseRepository.save(existingWarehouse);
+    }
+
+    public void deleteWarehouse(Long id) {
+        Warehouse warehouse = warehouseRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Warehouse with id " + id + " not found"));
+
+        warehouseRepository.delete(warehouse);
+    }
+
+    private void applyDtoToWarehouse(Warehouse warehouse, WarehouseDto warehouseDto) {
         warehouse.setName(warehouseDto.getName());
         warehouse.setLocation(warehouseDto.getLocation());
-
-        return warehouseRepository.save(warehouse);
     }
 }

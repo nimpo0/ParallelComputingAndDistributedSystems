@@ -1,9 +1,22 @@
 package com.example.logistics_api.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "clients")
 public class Client {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String fullName;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false)
     private String phone;
 
     public Client() {

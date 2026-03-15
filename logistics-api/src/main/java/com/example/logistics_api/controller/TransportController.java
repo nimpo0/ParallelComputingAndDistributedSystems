@@ -25,7 +25,7 @@ public class TransportController {
     }
 
     @GetMapping("/{id}")
-    public Transport getTransportById(@PathVariable("id") Long id) {
+    public Transport getTransportById(@PathVariable Long id) {
         return transportService.getTransportById(id);
     }
 
@@ -33,5 +33,17 @@ public class TransportController {
     @ResponseStatus(HttpStatus.CREATED)
     public Transport createTransport(@Valid @RequestBody TransportDto transportDto) {
         return transportService.createTransport(transportDto);
+    }
+
+    @PutMapping("/{id}")
+    public Transport updateTransport(@PathVariable Long id,
+                                     @Valid @RequestBody TransportDto transportDto) {
+        return transportService.updateTransport(id, transportDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTransport(@PathVariable Long id) {
+        transportService.deleteTransport(id);
     }
 }

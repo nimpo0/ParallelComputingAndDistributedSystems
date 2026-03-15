@@ -12,11 +12,9 @@ import java.util.List;
 public class ReportService {
 
     private final ShipmentRepository shipmentRepository;
-    private final StatusService statusService;
 
-    public ReportService(ShipmentRepository shipmentRepository, StatusService statusService) {
+    public ReportService(ShipmentRepository shipmentRepository) {
         this.shipmentRepository = shipmentRepository;
-        this.statusService = statusService;
     }
 
     public ShipmentReportDto getShipmentSummaryReport() {
@@ -33,20 +31,16 @@ public class ReportService {
                 totalWeight += shipment.getWeight();
             }
 
-            if (shipment.getStatusId() != null) {
-                Status status = statusService.getStatusById(shipment.getStatusId());
-                String statusName = status.getName();
+            Status status = shipment.getStatus();
+            if (status != null && status.getName() != null) {
+                String normalized = status.getName().trim().toLowerCase();
 
-                if (statusName != null) {
-                    String normalized = statusName.trim().toLowerCase();
-
-                    if (normalized.equals("delivered")) {
-                        deliveredCount++;
-                    } else if (normalized.equals("in transit")) {
-                        inTransitCount++;
-                    } else if (normalized.equals("stored")) {
-                        storedCount++;
-                    }
+                if (normalized.equals("delivered")) {
+                    deliveredCount++;
+                } else if (normalized.equals("in transit")) {
+                    inTransitCount++;
+                } else if (normalized.equals("at warehouse") || normalized.equals("stored")) {
+                    storedCount++;
                 }
             }
         }

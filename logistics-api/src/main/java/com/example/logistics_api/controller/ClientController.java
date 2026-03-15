@@ -25,7 +25,7 @@ public class ClientController {
     }
 
     @GetMapping("/{id}")
-    public Client getClientById(@PathVariable("id") Long id) {
+    public Client getClientById(@PathVariable Long id) {
         return clientService.getClientById(id);
     }
 
@@ -33,5 +33,17 @@ public class ClientController {
     @ResponseStatus(HttpStatus.CREATED)
     public Client createClient(@Valid @RequestBody ClientDto clientDto) {
         return clientService.createClient(clientDto);
+    }
+
+    @PutMapping("/{id}")
+    public Client updateClient(@PathVariable Long id,
+                               @Valid @RequestBody ClientDto clientDto) {
+        return clientService.updateClient(id, clientDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteClient(@PathVariable Long id) {
+        clientService.deleteClient(id);
     }
 }

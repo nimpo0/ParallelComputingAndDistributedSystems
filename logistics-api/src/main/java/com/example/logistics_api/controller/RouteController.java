@@ -20,18 +20,21 @@ public class RouteController {
     }
 
     @GetMapping
-    public List<Route> getAllRoutes() {
-        return routeService.getAllRoutes();
+    public List<Route> getAllRoutes(
+            @RequestParam(required = false) String startPoint,
+            @RequestParam(required = false) String endPoint
+    ) {
+        return routeService.getAllRoutes(startPoint, endPoint);
     }
 
     @GetMapping("/{id}")
-    public Route getRouteById(@PathVariable("id") Long id) {
+    public Route getRouteById(@PathVariable Long id) {
         return routeService.getRouteById(id);
     }
 
     @GetMapping("/optimal")
-    public Route getOptimalRoute(@RequestParam("startPoint") String startPoint,
-                                 @RequestParam("endPoint") String endPoint) {
+    public Route getOptimalRoute(@RequestParam String startPoint,
+                                 @RequestParam String endPoint) {
         return routeService.getOptimalRoute(startPoint, endPoint);
     }
 
@@ -39,5 +42,17 @@ public class RouteController {
     @ResponseStatus(HttpStatus.CREATED)
     public Route createRoute(@Valid @RequestBody RouteDto routeDto) {
         return routeService.createRoute(routeDto);
+    }
+
+    @PutMapping("/{id}")
+    public Route updateRoute(@PathVariable Long id,
+                             @Valid @RequestBody RouteDto routeDto) {
+        return routeService.updateRoute(id, routeDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteRoute(@PathVariable Long id) {
+        routeService.deleteRoute(id);
     }
 }

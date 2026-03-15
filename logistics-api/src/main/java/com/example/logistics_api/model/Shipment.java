@@ -1,34 +1,71 @@
 package com.example.logistics_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "shipments")
 public class Shipment {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, unique = true)
     private String trackingNumber;
+
+    @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
     private Double weight;
+
+    @Column(nullable = false)
     private String destinationAddress;
 
-    private Long clientId;
-    private Long routeId;
-    private Long transportId;
-    private Long statusId;
-    private Long warehouseId;
+    @ManyToOne
+    @JoinColumn(name = "client_id", nullable = false)
+    private Client client;
+
+    @ManyToOne
+    @JoinColumn(name = "route_id", nullable = false)
+    private Route route;
+
+    @ManyToOne
+    @JoinColumn(name = "transport_id", nullable = false)
+    private Transport transport;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
+    private Status status;
+
+    @ManyToOne
+    @JoinColumn(name = "warehouse_id", nullable = false)
+    private Warehouse warehouse;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "shipment", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TrackingRecord> trackingRecords = new ArrayList<>();
 
     public Shipment() {
     }
 
     public Shipment(Long id, String trackingNumber, String description, Double weight,
-                    String destinationAddress, Long clientId, Long routeId,
-                    Long transportId, Long statusId, Long warehouseId) {
+                    String destinationAddress, Client client, Route route,
+                    Transport transport, Status status, Warehouse warehouse) {
         this.id = id;
         this.trackingNumber = trackingNumber;
         this.description = description;
         this.weight = weight;
         this.destinationAddress = destinationAddress;
-        this.clientId = clientId;
-        this.routeId = routeId;
-        this.transportId = transportId;
-        this.statusId = statusId;
-        this.warehouseId = warehouseId;
+        this.client = client;
+        this.route = route;
+        this.transport = transport;
+        this.status = status;
+        this.warehouse = warehouse;
     }
 
     public Long getId() {
@@ -71,43 +108,51 @@ public class Shipment {
         this.destinationAddress = destinationAddress;
     }
 
-    public Long getClientId() {
-        return clientId;
+    public Client getClient() {
+        return client;
     }
 
-    public void setClientId(Long clientId) {
-        this.clientId = clientId;
+    public void setClient(Client client) {
+        this.client = client;
     }
 
-    public Long getRouteId() {
-        return routeId;
+    public Route getRoute() {
+        return route;
     }
 
-    public void setRouteId(Long routeId) {
-        this.routeId = routeId;
+    public void setRoute(Route route) {
+        this.route = route;
     }
 
-    public Long getTransportId() {
-        return transportId;
+    public Transport getTransport() {
+        return transport;
     }
 
-    public void setTransportId(Long transportId) {
-        this.transportId = transportId;
+    public void setTransport(Transport transport) {
+        this.transport = transport;
     }
 
-    public Long getStatusId() {
-        return statusId;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
-    public Long getWarehouseId() {
-        return warehouseId;
+    public Warehouse getWarehouse() {
+        return warehouse;
     }
 
-    public void setWarehouseId(Long warehouseId) {
-        this.warehouseId = warehouseId;
+    public void setWarehouse(Warehouse warehouse) {
+        this.warehouse = warehouse;
+    }
+
+    public List<TrackingRecord> getTrackingRecords() {
+        return trackingRecords;
+    }
+
+    public void setTrackingRecords(List<TrackingRecord> trackingRecords) {
+        this.trackingRecords = trackingRecords;
     }
 }
