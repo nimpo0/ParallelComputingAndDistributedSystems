@@ -28,10 +28,28 @@ public class ClientService {
 
     public Client createClient(ClientDto clientDto) {
         Client client = new Client();
+        applyDtoToClient(client, clientDto);
+        return clientRepository.save(client);
+    }
+
+    public Client updateClient(Long id, ClientDto clientDto) {
+        Client existingClient = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client with id " + id + " not found"));
+
+        applyDtoToClient(existingClient, clientDto);
+        return clientRepository.save(existingClient);
+    }
+
+    public void deleteClient(Long id) {
+        Client client = clientRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Client with id " + id + " not found"));
+
+        clientRepository.delete(client);
+    }
+
+    private void applyDtoToClient(Client client, ClientDto clientDto) {
         client.setFullName(clientDto.getFullName());
         client.setEmail(clientDto.getEmail());
         client.setPhone(clientDto.getPhone());
-
-        return clientRepository.save(client);
     }
 }

@@ -25,12 +25,12 @@ public class TrackingController {
     }
 
     @GetMapping("/{id}")
-    public TrackingResponseDto getTrackingRecordById(@PathVariable("id") Long id) {
+    public TrackingResponseDto getTrackingRecordById(@PathVariable Long id) {
         return trackingService.getTrackingRecordById(id);
     }
 
     @GetMapping("/shipment/{shipmentId}")
-    public List<TrackingResponseDto> getTrackingByShipmentId(@PathVariable("shipmentId") Long shipmentId) {
+    public List<TrackingResponseDto> getTrackingByShipmentId(@PathVariable Long shipmentId) {
         return trackingService.getTrackingByShipmentId(shipmentId);
     }
 
@@ -38,5 +38,17 @@ public class TrackingController {
     @ResponseStatus(HttpStatus.CREATED)
     public TrackingResponseDto createTrackingRecord(@Valid @RequestBody TrackingDto trackingDto) {
         return trackingService.createTrackingRecord(trackingDto);
+    }
+
+    @PutMapping("/{id}")
+    public TrackingResponseDto updateTrackingRecord(@PathVariable Long id,
+                                                    @Valid @RequestBody TrackingDto trackingDto) {
+        return trackingService.updateTrackingRecord(id, trackingDto);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTrackingRecord(@PathVariable Long id) {
+        trackingService.deleteTrackingRecord(id);
     }
 }

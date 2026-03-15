@@ -8,6 +8,7 @@ import com.example.logistics_api.model.Status;
 import com.example.logistics_api.model.TrackingRecord;
 import com.example.logistics_api.repository.TrackingRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,38 +45,62 @@ public class TrackingService {
     public List<TrackingResponseDto> getTrackingByShipmentId(Long shipmentId) {
         shipmentService.getShipmentById(shipmentId);
 
-        return trackingRepository.findByShipmentId(shipmentId)
+        return trackingRepository.findByShipment_Id(shipmentId)
                 .stream()
                 .map(this::mapToResponseDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public TrackingResponseDto createTrackingRecord(TrackingDto trackingDto) {
         Shipment shipment = shipmentService.getShipmentEntityById(trackingDto.getShipmentId());
         Status status = statusService.getStatusById(trackingDto.getStatusId());
 
         TrackingRecord trackingRecord = new TrackingRecord();
-        trackingRecord.setShipmentId(shipment.getId());
+        trackingRecord.setShipment(shipment);
         trackingRecord.setLocation(trackingDto.getLocation());
         trackingRecord.setEventDescription(trackingDto.getEventDescription());
         trackingRecord.setTimestamp(trackingDto.getTimestamp());
-        trackingRecord.setStatusId(status.getId());
+        trackingRecord.setStatus(status);
 
         TrackingRecord savedRecord = trackingRepository.save(trackingRecord);
-
         return mapToResponseDto(savedRecord);
     }
 
-    private TrackingResponseDto mapToResponseDto(TrackingRecord trackingRecord) {
-        Status status = statusService.getStatusById(trackingRecord.getStatusId());
+    @Transactional
+    public TrackingResponseDto updateTrackingRecord(Long id, TrackingDto trackingDto) {
+        TrackingRecord existingRecord = trackingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tracking record with id " + id + " not found"));
 
+        Shipment shipment = shipmentService.getShipmentEntityById(trackingDto.getShipmentId());
+        Status status = statusService.getStatusById(trackingDto.getStatusId());
+
+        existingRecord.setShipment(shipment);
+        existingRecord.setLocation(trackingDto.getLocation());
+        existingRecord.setEventDescription(trackingDto.getEventDescription());
+        existingRecord.setTimestamp(trackingDto.getTimestamp());
+        existingRecord.setStatus(status);
+
+        TrackingRecord updatedRecord = trackingRepository.save(existingRecord);
+        return mapToResponseDto(updatedRecord);
+    }
+
+    @Transactional
+    public void deleteTrackingRecord(Long id) {
+        TrackingRecord record = trackingRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Tracking record with id " + id + " not found"));
+
+        trackingRepository.delete(record);
+    }
+
+    private TrackingResponseDto mapToResponseDto(TrackingRecord trackingRecord) {
         return new TrackingResponseDto(
                 trackingRecord.getId(),
-                trackingRecord.getShipmentId(),
+                trackingRecord.getShipment().getId(),
                 trackingRecord.getLocation(),
                 trackingRecord.getEventDescription(),
                 trackingRecord.getTimestamp(),
-                status
+                trackingRecord.getStatus()
         );
     }
 }

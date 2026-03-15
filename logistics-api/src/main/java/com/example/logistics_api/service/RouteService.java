@@ -18,7 +18,19 @@ public class RouteService {
         this.routeRepository = routeRepository;
     }
 
-    public List<Route> getAllRoutes() {
+    public List<Route> getAllRoutes(String startPoint, String endPoint) {
+        if (startPoint != null && endPoint != null) {
+            return routeRepository.findByStartPointIgnoreCaseAndEndPointIgnoreCase(startPoint, endPoint);
+        }
+
+        if (startPoint != null) {
+            return routeRepository.findByStartPointIgnoreCase(startPoint);
+        }
+
+        if (endPoint != null) {
+            return routeRepository.findByEndPointIgnoreCase(endPoint);
+        }
+
         return routeRepository.findAll();
     }
 
@@ -29,15 +41,28 @@ public class RouteService {
 
     public Route createRoute(RouteDto routeDto) {
         Route route = new Route();
-        route.setStartPoint(routeDto.getStartPoint());
-        route.setEndPoint(routeDto.getEndPoint());
-        route.setDistanceKm(routeDto.getDistanceKm());
-
+        applyDtoToRoute(route, routeDto);
         return routeRepository.save(route);
     }
 
+    public Route updateRoute(Long id, RouteDto routeDto) {
+        Route existingRoute = routeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Route with id " + id + " not found"));
+
+        applyDtoToRoute(existingRoute, routeDto);
+        return routeRepository.save(existingRoute);
+    }
+
+    public void deleteRoute(Long id) {
+        Route route = routeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Route with id " + id + " not found"));
+
+        routeRepository.delete(route);
+    }
+
     public Route getOptimalRoute(String startPoint, String endPoint) {
-        List<Route> matchingRoutes = routeRepository.findByStartPointAndEndPoint(startPoint, endPoint);
+        List<Route> matchingRoutes =
+                routeRepository.findByStartPointIgnoreCaseAndEndPointIgnoreCase(startPoint, endPoint);
 
         if (matchingRoutes.isEmpty()) {
             throw new ResourceNotFoundException(
@@ -50,5 +75,11 @@ public class RouteService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "No optimal route found from " + startPoint + " to " + endPoint
                 ));
+    }
+
+    private void applyDtoToRoute(Route route, RouteDto routeDto) {
+        route.setStartPoint(routeDto.getStartPoint());
+        route.setEndPoint(routeDto.getEndPoint());
+        route.setDistanceKm(routeDto.getDistanceKm());
     }
 }

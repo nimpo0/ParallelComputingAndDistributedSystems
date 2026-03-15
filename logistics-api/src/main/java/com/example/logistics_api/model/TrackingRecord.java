@@ -1,24 +1,45 @@
 package com.example.logistics_api.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "tracking_records")
 public class TrackingRecord {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long shipmentId;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "shipment_id", nullable = false)
+    private Shipment shipment;
+
+    @Column(nullable = false)
     private String location;
+
+    @Column(nullable = false)
     private String eventDescription;
+
+    @Column(nullable = false)
     private String timestamp;
-    private Long statusId;
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
+    private Status status;
 
     public TrackingRecord() {
     }
 
-    public TrackingRecord(Long id, Long shipmentId, String location,
-                          String eventDescription, String timestamp, Long statusId) {
+    public TrackingRecord(Long id, Shipment shipment, String location,
+                          String eventDescription, String timestamp, Status status) {
         this.id = id;
-        this.shipmentId = shipmentId;
+        this.shipment = shipment;
         this.location = location;
         this.eventDescription = eventDescription;
         this.timestamp = timestamp;
-        this.statusId = statusId;
+        this.status = status;
     }
 
     public Long getId() {
@@ -29,12 +50,12 @@ public class TrackingRecord {
         this.id = id;
     }
 
-    public Long getShipmentId() {
-        return shipmentId;
+    public Shipment getShipment() {
+        return shipment;
     }
 
-    public void setShipmentId(Long shipmentId) {
-        this.shipmentId = shipmentId;
+    public void setShipment(Shipment shipment) {
+        this.shipment = shipment;
     }
 
     public String getLocation() {
@@ -61,11 +82,11 @@ public class TrackingRecord {
         this.timestamp = timestamp;
     }
 
-    public Long getStatusId() {
-        return statusId;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setStatusId(Long statusId) {
-        this.statusId = statusId;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

@@ -28,9 +28,27 @@ public class TransportService {
 
     public Transport createTransport(TransportDto transportDto) {
         Transport transport = new Transport();
+        applyDtoToTransport(transport, transportDto);
+        return transportRepository.save(transport);
+    }
+
+    public Transport updateTransport(Long id, TransportDto transportDto) {
+        Transport existingTransport = transportRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transport with id " + id + " not found"));
+
+        applyDtoToTransport(existingTransport, transportDto);
+        return transportRepository.save(existingTransport);
+    }
+
+    public void deleteTransport(Long id) {
+        Transport transport = transportRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Transport with id " + id + " not found"));
+
+        transportRepository.delete(transport);
+    }
+
+    private void applyDtoToTransport(Transport transport, TransportDto transportDto) {
         transport.setType(transportDto.getType());
         transport.setVehicleNumber(transportDto.getVehicleNumber());
-
-        return transportRepository.save(transport);
     }
 }

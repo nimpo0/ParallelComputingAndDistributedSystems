@@ -1,8 +1,19 @@
 package com.example.logistics_api.model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "transports")
 public class Transport {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String type;
+
+    @Column(nullable = false)
     private String vehicleNumber;
 
     public Transport() {
